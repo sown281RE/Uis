@@ -4971,17 +4971,21 @@ Components.Window = (function()
 		end)
 
 		Creator.AddSignal(UserInputService.InputBegan, function(Input)
-			if
-				type(Library.MinimizeKeybind) == "table"
-				and Library.MinimizeKeybind.Type == "Keybind"
-				and not UserInputService:GetFocusedTextBox()
-			then
-				if Input.KeyCode.Name == Library.MinimizeKeybind.Value then
-					Window:Minimize()
-				end
-			elseif Input.KeyCode == Library.MinimizeKey and not UserInputService:GetFocusedTextBox() then
-				Window:Minimize()
-			end
+		    -- Kiểm tra nếu đang gõ chữ trong TextBox thì không kích hoạt
+		    if UserInputService:GetFocusedTextBox() then return end
+		
+		    -- Ưu tiên phím tắt từ Keybind trong Settings (nếu có)
+		    if type(Library.MinimizeKeybind) == "table" and Library.MinimizeKeybind.Type == "Keybind" then
+		        if Input.KeyCode.Name == Library.MinimizeKeybind.Value then
+		            Window:Minimize()
+		            return -- Thoát luôn để không chạy xuống dưới
+		        end
+		    end
+		
+		    -- Nếu không có Keybind hoặc Keybind không khớp, kiểm tra phím mặc định (LeftAlt của bạn)
+		    if Input.KeyCode == Library.MinimizeKey then
+		        Window:Minimize()
+		    end
 		end)
 
 		function Window:ToggleSearch()
